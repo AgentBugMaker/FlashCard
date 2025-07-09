@@ -18,11 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const flashcardForm = document.getElementById('flashcard-form');
     const addDefinitionBtn = document.getElementById('add-definition');
     const definitionsContainer = document.getElementById('definitions-container');
+    const definitionsList = document.getElementById('definitions-list');
     
     // App State
     let currentTheme = localStorage.getItem('theme') || 'light';
     let currentView = localStorage.getItem('view') || 'flashcard';
-    let flashcards = [];
+    let flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
     let currentCardIndex = 0;
     
     // Initialize the app
@@ -38,7 +39,12 @@ document.addEventListener('DOMContentLoaded', function() {
         updateViewIcon();
         
         // Load flashcards
-        loadFlashcards();
+        if (flashcards.length === 0) {
+            loadSampleData();
+        } else {
+            renderFlashcard();
+            renderTable();
+        }
         
         // Set up event listeners
         setupEventListeners();
@@ -73,36 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeModal();
             }
         });
-    }
-    
-    // Load flashcards from words.json
-    async function loadFlashcards() {
-        try {
-            const response = await fetch('words.json');
-            if (!response.ok) throw new Error('Failed to load words');
-            flashcards = await response.json();
-            
-            // Initialize with first card if available
-            if (flashcards.length > 0) {
-                currentCardIndex = 0;
-                renderFlashcard();
-                renderTable();
-            } else {
-                // Load sample data if empty
-                loadSampleData();
-            }
-        } catch (error) {
-            console.error('Error loading flashcards:', error);
-            loadSampleData();
-        }
-    }
-    
-    // Save flashcards to words.json (simulated - would need server in real app)
-    function saveFlashcards() {
-        // In a real app, you would send this to a server
-        console.log('Flashcards updated (would save to server in production)');
-        renderFlashcard();
-        renderTable();
     }
     
     // Theme functions
@@ -163,22 +139,34 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderFlashcard() {
         if (flashcards.length === 0) {
             document.getElementById('card-word').textContent = 'No flashcards';
-            document.getElementById('card-definition').textContent = 'Add some flashcards to get started';
+            definitionsList.innerHTML = '<p>Add some flashcards to get started</p>';
             return;
         }
         
         const card = flashcards[currentCardIndex];
         document.getElementById('card-word').textContent = card.word;
         
-        // Use the first definition for the flashcard view
+        // Clear and rebuild definitions list
+        definitionsList.innerHTML = '';
+
         if (card.definitions && card.definitions.length > 0) {
-            document.getElementById('card-definition').textContent = card.definitions[0].text;
-            const cefrElement = document.querySelector('.cefr-level');
-            cefrElement.textContent = card.definitions[0].cefrLevel;
-            cefrElement.className = 'cefr-level';
-            cefrElement.classList.add(`cefr-${card.definitions[0].cefrLevel}`);
+            card.definitions.forEach(def => {
+                const definitionElement = document.createElement('div');
+                definitionElement.className = 'definition-item';
+                
+                const textElement = document.createElement('p');
+                textElement.textContent = def.text;
+                
+                const cefrElement = document.createElement('span');
+                cefrElement.className = `cefr-level cefr-${def.cefrLevel}`;
+                cefrElement.textContent = def.cefrLevel;
+                
+                definitionElement.appendChild(textElement);
+                definitionElement.appendChild(cefrElement);
+                definitionsList.appendChild(definitionElement);
+            });
         }
-        
+
         // Reset card to front when changing
         if (flashcard.classList.contains('flipped')) {
             flashcard.classList.remove('flipped');
@@ -190,20 +178,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const card = flashcards[currentCardIndex];
         if (card.word) {
-            // Use Web Speech API for pronunciation
-            speakWord(card.word);
-        }
-    }
-    
-    // Text-to-speech function
-    function speakWord(text) {
-        if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US'; // Set to your target language
-            utterance.rate = 0.9;
-            speechSynthesis.speak(utterance);
-        } else {
-            alert('Text-to-speech not supported in your browser');
+            responsiveVoice.speak(card.word, "UK English Female", {
+                rate: 0.9,
+                pitch: 1,
+                onend: () => console.log("Finished speaking")
+            });
         }
     }
     
@@ -245,16 +224,25 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             row.appendChild(definitionsCell);
             
-            // CEFR Level cell
+            // CEFR Levels cell
             const cefrCell = document.createElement('td');
             if (card.definitions && card.definitions.length > 0) {
-                const cefrSpan = document.createElement('span');
-                cefrSpan.textContent = card.definitions[0].cefrLevel;
-                cefrSpan.className = `cefr-level cefr-${card.definitions[0].cefrLevel}`;
-                cefrSpan.style.padding = '2px 8px';
-                cefrSpan.style.borderRadius = '10px';
-                cefrSpan.style.fontSize = '0.8rem';
-                cefrCell.appendChild(cefrSpan);
+                const cefrContainer = document.createElement('div');
+                cefrContainer.style.display = 'flex';
+                cefrContainer.style.gap = '4px';
+                cefrContainer.style.flexWrap = 'wrap';
+                
+                card.definitions.forEach(def => {
+                    const cefrSpan = document.createElement('span');
+                    cefrSpan.textContent = def.cefrLevel;
+                    cefrSpan.className = `cefr-level cefr-${def.cefrLevel}`;
+                    cefrSpan.style.padding = '2px 8px';
+                    cefrSpan.style.borderRadius = '10px';
+                    cefrSpan.style.fontSize = '0.8rem';
+                    cefrContainer.appendChild(cefrSpan);
+                });
+                
+                cefrCell.appendChild(cefrContainer);
             }
             row.appendChild(cefrCell);
             
@@ -287,6 +275,13 @@ document.addEventListener('DOMContentLoaded', function() {
             row.appendChild(actionsCell);
             
             flashcardsTable.appendChild(row);
+        });
+    }
+    
+    function speakWord(text) {
+        responsiveVoice.speak(text, "UK English Female", {
+            rate: 0.9,
+            pitch: 1
         });
     }
     
@@ -422,13 +417,18 @@ document.addEventListener('DOMContentLoaded', function() {
         closeModal();
     }
     
+    function saveFlashcards() {
+        localStorage.setItem('flashcards', JSON.stringify(flashcards));
+    }
+    
     // Sample data
     function loadSampleData() {
         flashcards = [
             {
                 word: "Hello",
                 definitions: [
-                    { text: "A common greeting", cefrLevel: "A1" }
+                    { text: "A common greeting", cefrLevel: "A1" },
+                    { text: "An expression of greeting", cefrLevel: "A2" }
                 ]
             },
             {
@@ -441,7 +441,8 @@ document.addEventListener('DOMContentLoaded', function() {
             {
                 word: "Computer",
                 definitions: [
-                    { text: "An electronic device for processing data", cefrLevel: "A2" }
+                    { text: "An electronic device for processing data", cefrLevel: "A2" },
+                    { text: "A programmable machine", cefrLevel: "B1" }
                 ]
             }
         ];
