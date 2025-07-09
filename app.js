@@ -1,44 +1,62 @@
-let cards = JSON.parse(localStorage.getItem(cards))  [];
+const form = document.getElementById('add-word-form');
+const cardsContainer = document.getElementById('cards-container');
+
+let words = JSON.parse(localStorage.getItem('flashcards')) || {};
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const word = form.word.value.trim();
+  const definition = form.definition.value.trim();
+  const cefr = form.cefr.value.trim().toUpperCase();
+
+  if (!words[word]) {
+    words[word] = [];
+  }
+
+  words[word].push({ definition, cefr });
+  localStorage.setItem('flashcards', JSON.stringify(words));
+  form.reset();
+  renderCards();
+});
 
 function renderCards() {
-  const container = document.getElementById(cards);
-  container.innerHTML = ;
+  cardsContainer.innerHTML = '';
 
-  const grouped = {};
-  cards.forEach(card = {
-    if (!grouped[card.word]) grouped[card.word] = [];
-    grouped[card.word].push({ meaning card.meaning, level card.level });
-  });
+  Object.keys(words).forEach(word => {
+    const card = document.createElement('div');
+    card.className = 'card';
 
-  Object.keys(grouped).forEach(word = {
-    const cardDiv = document.createElement(div);
-    cardDiv.className = card;
-    cardDiv.textContent = word;
-    cardDiv.onclick = () = {
-      alert(
-        grouped[word]
-          .map((m, i) = `${i + 1}. ${m.meaning} [${m.level}]`)
-          .join(n)
-      );
+    const front = document.createElement('div');
+    front.className = 'card-front card-content';
+    front.innerHTML = `
+      <div class="card-word">${word}</div>
+      <button class="pronounce-btn">🔊 Pronounce</button>
+    `;
+
+    const back = document.createElement('div');
+    back.className = 'card-back card-content';
+
+    words[word].forEach(item => {
+      const def = document.createElement('div');
+      def.className = 'card-definition';
+      def.textContent = `${item.definition} (${item.cefr})`;
+      back.appendChild(def);
+    });
+
+    card.appendChild(front);
+    card.appendChild(back);
+
+    card.addEventListener('click', () => {
+      card.classList.toggle('flipped');
+    });
+
+    front.querySelector('.pronounce-btn').addEventListener('click', e => {
+      e.stopPropagation();
       speak(word);
-    };
-    container.appendChild(cardDiv);
+    });
+
+    cardsContainer.appendChild(card);
   });
-}
-
-function addCard() {
-  const word = document.getElementById(word).value.trim();
-  const meaning = document.getElementById(meaning).value.trim();
-  const level = document.getElementById(level).value.trim();
-
-  if (word && meaning && level) {
-    cards.push({ word, meaning, level });
-    localStorage.setItem(cards, JSON.stringify(cards));
-    renderCards();
-    document.getElementById(word).value = ;
-    document.getElementById(meaning).value = ;
-    document.getElementById(level).value = ;
-  }
 }
 
 function speak(text) {
