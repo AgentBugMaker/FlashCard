@@ -1,0 +1,33 @@
+[
+    {
+        "word": "Hello",
+        "definitions": [
+            {
+                "text": "A common greeting",
+                "cefrLevel": "A1"
+            }
+        ]
+    },
+    {
+        "word": "Goodbye",
+        "definitions": [
+            {
+                "text": "A farewell expression",
+                "cefrLevel": "A1"
+            },
+            {
+                "text": "The act of parting",
+                "cefrLevel": "B1"
+            }
+        ]
+    },
+    {
+        "word": "Computer",
+        "definitions": [
+            {
+                "text": "An electronic device for processing data",
+                "cefrLevel": "A2"
+            }
+        ]
+    }
+]
