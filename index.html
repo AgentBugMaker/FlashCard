@@ -1,23 +1,21 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>FlashCard App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flashcards App</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>📚 FlashCard App</h1>
-
-  <div id="add-card">
-    <input id="word" placeholder="Word" />
-    <input id="meaning" placeholder="Meaning" />
-    <input id="level" placeholder="CEFR (A1, B2, C1...)" />
-    <button onclick="addCard()">Add</button>
+  <div class="container">
+    <h1>Flashcards</h1>
+    <form id="add-word-form">
+      <input type="text" id="word" placeholder="Word" required />
+      <input type="text" id="definition" placeholder="Definition" required />
+      <input type="text" id="cefr" placeholder="CEFR Level (A1, B2, etc.)" required />
+      <button type="submit">Add</button>
+    </form>
+    <div id="cards-container"></div>
   </div>
-
-  <h2>Your Flashcards</h2>
-  <div id="cards"></div>
-
   <script src="app.js"></script>
 </body>
 </html>
