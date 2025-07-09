@@ -5,6 +5,10 @@
             {
                 "text": "A common greeting",
                 "cefrLevel": "A1"
+            },
+            {
+                "text": "An expression of greeting",
+                "cefrLevel": "A2"
             }
         ]
     },
@@ -27,6 +31,10 @@
             {
                 "text": "An electronic device for processing data",
                 "cefrLevel": "A2"
+            },
+            {
+                "text": "A programmable machine",
+                "cefrLevel": "B1"
             }
         ]
     }
