@@ -3,112 +3,1154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlashCard Master</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Material+Icons&display=swap" rel="stylesheet">
-    <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+    <title>FlashCard Master Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/responsive-voice/1.6.0/responsivevoice.min.js"></script>
+    <style>
+        :root {
+            /* Light Theme */
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #f72585;
+            --background: #f8f9fa;
+            --surface: #ffffff;
+            --text: #212529;
+            --text-secondary: #495057;
+            --error: #e63946;
+            --success: #2a9d8f;
+            --warning: #f4a261;
+            
+            /* Card Colors */
+            --card-bg: #ffffff;
+            --card-shadow: rgba(0, 0, 0, 0.1);
+            --card-text: #212529;
+            
+            /* Button Colors */
+            --button-primary: #4361ee;
+            --button-primary-hover: #3a0ca3;
+            --button-secondary: #6c757d;
+            --button-danger: #e63946;
+            
+            /* CEFR Colors */
+            --cefr-a1: #4285F4;
+            --cefr-a2: #34A853;
+            --cefr-b1: #FBBC05;
+            --cefr-b2: #EA4335;
+            --cefr-c1: #AB47BC;
+            --cefr-c2: #651FFF;
+        }
+
+        [data-theme="dark"] {
+            --primary: #4895ef;
+            --primary-dark: #4cc9f0;
+            --secondary: #f72585;
+            --background: #121212;
+            --surface: #1e1e1e;
+            --text: #f8f9fa;
+            --text-secondary: #e9ecef;
+            
+            /* Card Colors */
+            --card-bg: #1e1e1e;
+            --card-shadow: rgba(0, 0, 0, 0.3);
+            --card-text: #f8f9fa;
+            
+            /* Button Colors */
+            --button-primary: #4895ef;
+            --button-primary-hover: #4cc9f0;
+            --button-secondary: #5a6268;
+            --button-danger: #d32f2f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--text-secondary);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-icon {
+            font-size: 32px;
+            color: var(--primary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            transform: scale(1.1);
+        }
+
+        [data-theme="dark"] .btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        .flashcard-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 30px var(--card-shadow);
+        }
+
+        .flashcard-container {
+            perspective: 1000px;
+            height: 400px;
+            margin-bottom: 30px;
+        }
+
+        .flashcard {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.7s;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .card-back {
+            background: var(--card-bg);
+            color: var(--card-text);
+            transform: rotateY(180deg);
+        }
+
+        .word {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .pronounce-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s;
+        }
+
+        .pronounce-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .definitions-container {
+            width: 100%;
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .definition-item {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .definition-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .cefr-level {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .cefr-A1 { background-color: var(--cefr-a1); }
+        .cefr-A2 { background-color: var(--cefr-a2); }
+        .cefr-B1 { background-color: var(--cefr-b1); color: #333; }
+        .cefr-B2 { background-color: var(--cefr-b2); }
+        .cefr-C1 { background-color: var(--cefr-c1); }
+        .cefr-C2 { background-color: var(--cefr-c2); }
+
+        .card-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .control-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            background-color: var(--button-primary);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            background-color: var(--button-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.secondary {
+            background-color: var(--button-secondary);
+        }
+
+        .words-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 30px var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--text-secondary);
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .add-btn {
+            background: var(--button-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .add-btn:hover {
+            background: var(--button-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .words-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .word-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: rgba(0, 0, 0, 0.03);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        [data-theme="dark"] .word-item {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .word-item:hover {
+            background: rgba(var(--primary-rgb), 0.1);
+            transform: translateX(5px);
+        }
+
+        .word-item.active {
+            background: rgba(var(--primary-rgb), 0.2);
+            border-left: 4px solid var(--primary);
+        }
+
+        .word-text {
+            font-weight: 500;
+            font-size: 18px;
+        }
+
+        .word-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .close-modal:hover {
+            color: var(--text);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--text-secondary);
+            border-radius: 12px;
+            background: var(--surface);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+        }
+
+        .definition-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .definition-input {
+            flex: 1;
+        }
+
+        .cefr-select {
+            width: 100px;
+        }
+
+        .remove-definition {
+            color: var(--button-danger);
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .add-definition {
+            background: var(--button-secondary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .add-definition:hover {
+            opacity: 0.9;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            background: var(--button-secondary);
+            color: white;
+        }
+
+        .btn-save {
+            background: var(--button-primary);
+            color: white;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            background: var(--success);
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(200%);
+            transition: transform 0.3s ease-out;
+            z-index: 2000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .flashcard-container {
+                height: 350px;
+            }
+            
+            .word {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .logo h1 {
+                font-size: 22px;
+            }
+            
+            .flashcard-section {
+                padding: 20px;
+            }
+            
+            .flashcard-container {
+                height: 300px;
+            }
+            
+            .word {
+                font-size: 32px;
+                margin-bottom: 20px;
+            }
+            
+            .card-face {
+                padding: 25px;
+            }
+            
+            .control-btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="app-container" data-theme="light">
-        <header class="app-header">
-            <h1>FlashCard Master</h1>
-            <div class="header-controls">
-                <button id="toggle-view" class="icon-button" title="Switch view">
-                    <span class="material-icons">table_view</span>
+        <header>
+            <div class="logo">
+                <i class="fas fa-layer-group logo-icon"></i>
+                <h1>FlashCard Master Pro</h1>
+            </div>
+            <div class="controls">
+                <button class="btn" id="toggle-theme" title="Toggle theme">
+                    <i class="fas fa-moon"></i>
                 </button>
-                <button id="toggle-theme" class="icon-button" title="Toggle theme">
-                    <span class="material-icons">dark_mode</span>
+                <button class="btn" id="toggle-view" title="Switch view">
+                    <i class="fas fa-table"></i>
                 </button>
             </div>
         </header>
 
-        <main>
-            <!-- Flashcard View -->
-            <div id="flashcard-view" class="view active">
-                <div id="flashcard" class="card">
-                    <div class="card-inner">
-                        <div class="card-front">
-                            <h2 id="card-word">Loading...</h2>
-                            <button id="play-audio" class="icon-button large" title="Play pronunciation">
-                                <span class="material-icons">volume_up</span>
+        <div class="main-content">
+            <div class="flashcard-section">
+                <div class="flashcard-container">
+                    <div class="flashcard" id="flashcard">
+                        <div class="card-face card-front">
+                            <div class="word" id="card-word">Hello</div>
+                            <button class="pronounce-btn" id="play-audio">
+                                <i class="fas fa-volume-up"></i>
                             </button>
                         </div>
-                        <div class="card-back">
-                            <div id="definitions-list" class="definitions-container"></div>
+                        <div class="card-face card-back">
+                            <div class="definitions-container" id="definitions-list">
+                                <div class="definition-item">
+                                    <div class="definition-text">A common greeting</div>
+                                    <span class="cefr-level cefr-A1">A1</span>
+                                </div>
+                                <div class="definition-item">
+                                    <div class="definition-text">An expression of greeting</div>
+                                    <span class="cefr-level cefr-A2">A2</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="card-controls">
-                    <button id="prev-card" class="control-button" title="Previous card">
-                        <span class="material-icons">chevron_left</span>
+                    <button class="control-btn secondary" id="prev-card">
+                        <i class="fas fa-chevron-left"></i> Previous
                     </button>
-                    <button id="flip-card" class="control-button primary">
-                        Flip Card
+                    <button class="control-btn" id="flip-card">
+                        <i class="fas fa-sync"></i> Flip Card
                     </button>
-                    <button id="next-card" class="control-button" title="Next card">
-                        <span class="material-icons">chevron_right</span>
+                    <button class="control-btn" id="next-card">
+                        Next <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
             </div>
-
-            <!-- Table View -->
-            <div id="table-view" class="view">
-                <div class="table-controls">
-                    <button id="add-flashcard" class="control-button primary">
-                        <span class="material-icons">add</span> Add New
+            
+            <div class="words-section">
+                <div class="section-header">
+                    <h2>Your Words</h2>
+                    <button class="add-btn" id="add-flashcard">
+                        <i class="fas fa-plus"></i> Add New
                     </button>
                 </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Word</th>
-                                <th>Definitions</th>
-                                <th>Levels</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="flashcards-table">
-                            <!-- Filled by JavaScript -->
-                        </tbody>
-                    </table>
+                
+                <div class="words-list" id="words-list">
+                    <div class="word-item active">
+                        <span class="word-text">Hello</span>
+                        <div class="word-actions">
+                            <button class="action-btn" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="word-item">
+                        <span class="word-text">Goodbye</span>
+                        <div class="word-actions">
+                            <button class="action-btn" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="word-item">
+                        <span class="word-text">Computer</span>
+                        <div class="word-actions">
+                            <button class="action-btn" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </main>
-
-        <!-- Add/Edit Modal -->
-        <div id="flashcard-modal" class="modal">
+        </div>
+        
+        <div class="modal" id="flashcard-modal">
             <div class="modal-content">
-                <span class="close-button">&times;</span>
-                <h2 id="modal-title">Add New Flashcard</h2>
+                <span class="close-modal" id="close-modal">&times;</span>
+                <h2 class="modal-title" id="modal-title">Add New Flashcard</h2>
+                
                 <form id="flashcard-form">
                     <div class="form-group">
                         <label for="word">Word</label>
-                        <input type="text" id="word" required>
+                        <input type="text" id="word" class="form-control" placeholder="Enter word" required>
                     </div>
+                    
                     <div class="form-group">
                         <label>Definitions</label>
                         <div id="definitions-container">
-                            <!-- Definitions will be added here -->
+                            <div class="definition-row">
+                                <input type="text" class="form-control definition-input" placeholder="Definition" required>
+                                <select class="form-control cefr-select">
+                                    <option value="A1">A1</option>
+                                    <option value="A2">A2</option>
+                                    <option value="B1">B1</option>
+                                    <option value="B2">B2</option>
+                                    <option value="C1">C1</option>
+                                    <option value="C2">C2</option>
+                                </select>
+                                <span class="remove-definition"><i class="fas fa-times"></i></span>
+                            </div>
                         </div>
-                        <button type="button" id="add-definition" class="control-button">
-                            <span class="material-icons">add</span> Add Definition
+                        <button type="button" class="add-definition" id="add-definition">
+                            <i class="fas fa-plus"></i> Add Definition
                         </button>
                     </div>
+                    
                     <div class="form-actions">
-                        <button type="button" id="cancel-flashcard" class="control-button">
-                            Cancel
-                        </button>
-                        <button type="submit" class="control-button primary">
-                            Save
-                        </button>
+                        <button type="button" class="control-btn btn-cancel" id="cancel-flashcard">Cancel</button>
+                        <button type="submit" class="control-btn btn-save">Save Flashcard</button>
                     </div>
                 </form>
             </div>
         </div>
+        
+        <div class="notification" id="notification">Flashcard saved successfully!</div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ResponsiveVoice
+            if (typeof responsiveVoice === 'undefined') {
+                console.error('ResponsiveVoice not loaded!');
+                alert('Text-to-speech functionality not available. Please check your internet connection.');
+            } else {
+                responsiveVoice.setDefaultVoice('US English Female');
+            }
+            
+            // DOM Elements
+            const appContainer = document.querySelector('.app-container');
+            const toggleThemeBtn = document.getElementById('toggle-theme');
+            const flashcard = document.getElementById('flashcard');
+            const flipCardBtn = document.getElementById('flip-card');
+            const prevCardBtn = document.getElementById('prev-card');
+            const nextCardBtn = document.getElementById('next-card');
+            const playAudioBtn = document.getElementById('play-audio');
+            const addFlashcardBtn = document.getElementById('add-flashcard');
+            const wordsList = document.getElementById('words-list');
+            const flashcardModal = document.getElementById('flashcard-modal');
+            const closeModalBtn = document.getElementById('close-modal');
+            const cancelFlashcardBtn = document.getElementById('cancel-flashcard');
+            const flashcardForm = document.getElementById('flashcard-form');
+            const addDefinitionBtn = document.getElementById('add-definition');
+            const definitionsContainer = document.getElementById('definitions-container');
+            const notification = document.getElementById('notification');
+            
+            // App State
+            let currentTheme = localStorage.getItem('theme') || 'light';
+            let flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+            let currentCardIndex = 0;
+            
+            // Initialize the app
+            initApp();
+            
+            function initApp() {
+                // Set theme
+                appContainer.setAttribute('data-theme', currentTheme);
+                updateThemeIcon();
+                
+                // Load flashcards or sample data
+                if (flashcards.length === 0) {
+                    loadSampleData();
+                }
+                
+                // Render initial state
+                renderFlashcard();
+                renderWordsList();
+                
+                // Set up event listeners
+                setupEventListeners();
+            }
+            
+            function setupEventListeners() {
+                // Theme toggle
+                toggleThemeBtn.addEventListener('click', toggleTheme);
+                
+                // Card interactions
+                flashcard.addEventListener('click', flipCard);
+                flipCardBtn.addEventListener('click', flipCard);
+                prevCardBtn.addEventListener('click', showPreviousCard);
+                nextCardBtn.addEventListener('click', showNextCard);
+                playAudioBtn.addEventListener('click', playCurrentAudio);
+                
+                // Modal interactions
+                addFlashcardBtn.addEventListener('click', openAddFlashcardModal);
+                closeModalBtn.addEventListener('click', closeModal);
+                cancelFlashcardBtn.addEventListener('click', closeModal);
+                flashcardForm.addEventListener('submit', saveFlashcard);
+                addDefinitionBtn.addEventListener('click', addDefinitionField);
+                
+                // Words list interactions
+                wordsList.addEventListener('click', handleWordsListClick);
+                
+                // Click outside modal to close
+                window.addEventListener('click', function(event) {
+                    if (event.target === flashcardModal) {
+                        closeModal();
+                    }
+                });
+            }
+            
+            function toggleTheme() {
+                currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+                appContainer.setAttribute('data-theme', currentTheme);
+                localStorage.setItem('theme', currentTheme);
+                updateThemeIcon();
+            }
+            
+            function updateThemeIcon() {
+                const icon = toggleThemeBtn.querySelector('i');
+                icon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            }
+            
+            function flipCard() {
+                flashcard.classList.toggle('flipped');
+            }
+            
+            function showPreviousCard() {
+                if (flashcards.length === 0) return;
+                
+                currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
+                renderFlashcard();
+                renderWordsList();
+            }
+            
+            function showNextCard() {
+                if (flashcards.length === 0) return;
+                
+                currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+                renderFlashcard();
+                renderWordsList();
+            }
+            
+            function renderFlashcard() {
+                if (flashcards.length === 0) {
+                    document.getElementById('card-word').textContent = 'No flashcards';
+                    document.getElementById('definitions-list').innerHTML = '<p>Add some flashcards to get started</p>';
+                    return;
+                }
+                
+                const card = flashcards[currentCardIndex];
+                document.getElementById('card-word').textContent = card.word;
+                
+                // Clear and rebuild definitions list
+                const definitionsList = document.getElementById('definitions-list');
+                definitionsList.innerHTML = '';
+                
+                if (card.definitions && card.definitions.length > 0) {
+                    card.definitions.forEach(def => {
+                        const definitionElement = document.createElement('div');
+                        definitionElement.className = 'definition-item';
+                        
+                        const textElement = document.createElement('div');
+                        textElement.className = 'definition-text';
+                        textElement.textContent = def.text;
+                        
+                        const cefrElement = document.createElement('span');
+                        cefrElement.className = `cefr-level cefr-${def.cefrLevel}`;
+                        cefrElement.textContent = def.cefrLevel;
+                        
+                        definitionElement.appendChild(textElement);
+                        definitionElement.appendChild(cefrElement);
+                        definitionsList.appendChild(definitionElement);
+                    });
+                } else {
+                    definitionsList.innerHTML = '<p>No definitions available</p>';
+                }
+                
+                // Reset card to front when changing
+                if (flashcard.classList.contains('flipped')) {
+                    flashcard.classList.remove('flipped');
+                }
+            }
+            
+            function playCurrentAudio() {
+                if (flashcards.length === 0) return;
+                
+                const card = flashcards[currentCardIndex];
+                if (card.word) {
+                    // Use ResponsiveVoice for pronunciation
+                    responsiveVoice.speak(card.word, "US English Female", {
+                        rate: 0.9,
+                        pitch: 1,
+                        onstart: () => {
+                            playAudioBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                            playAudioBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                        },
+                        onend: () => {
+                            playAudioBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                            playAudioBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                        }
+                    });
+                }
+            }
+            
+            function renderWordsList() {
+                wordsList.innerHTML = '';
+                
+                if (flashcards.length === 0) {
+                    wordsList.innerHTML = '<div class="no-words">No flashcards yet. Add some to get started!</div>';
+                    return;
+                }
+                
+                flashcards.forEach((card, index) => {
+                    const wordItem = document.createElement('div');
+                    wordItem.className = `word-item ${index === currentCardIndex ? 'active' : ''}`;
+                    wordItem.dataset.index = index;
+                    
+                    const wordText = document.createElement('span');
+                    wordText.className = 'word-text';
+                    wordText.textContent = card.word;
+                    
+                    const wordActions = document.createElement('div');
+                    wordActions.className = 'word-actions';
+                    
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'action-btn';
+                    editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                    editBtn.title = 'Edit';
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'action-btn';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    deleteBtn.title = 'Delete';
+                    
+                    wordActions.appendChild(editBtn);
+                    wordActions.appendChild(deleteBtn);
+                    
+                    wordItem.appendChild(wordText);
+                    wordItem.appendChild(wordActions);
+                    
+                    wordsList.appendChild(wordItem);
+                });
+            }
+            
+            function handleWordsListClick(e) {
+                const wordItem = e.target.closest('.word-item');
+                if (!wordItem) return;
+                
+                const index = parseInt(wordItem.dataset.index);
+                
+                if (e.target.closest('.action-btn')) {
+                    if (e.target.closest('.fa-edit')) {
+                        editFlashcard(index);
+                    } else if (e.target.closest('.fa-trash')) {
+                        deleteFlashcard(index);
+                    }
+                } else {
+                    // Select the card
+                    currentCardIndex = index;
+                    renderFlashcard();
+                    renderWordsList();
+                }
+            }
+            
+            function openAddFlashcardModal() {
+                document.getElementById('modal-title').textContent = 'Add New Flashcard';
+                document.getElementById('word').value = '';
+                definitionsContainer.innerHTML = '';
+                addDefinitionField(); // Add one empty definition field
+                flashcardModal.classList.add('active');
+            }
+            
+            function closeModal() {
+                flashcardModal.classList.remove('active');
+            }
+            
+            function addDefinitionField(text = '', cefrLevel = 'A1') {
+                const definitionRow = document.createElement('div');
+                definitionRow.className = 'definition-row';
+                
+                const textInput = document.createElement('input');
+                textInput.type = 'text';
+                textInput.className = 'form-control definition-input';
+                textInput.placeholder = 'Definition';
+                textInput.value = text;
+                textInput.required = true;
+                
+                const cefrSelect = document.createElement('select');
+                cefrSelect.className = 'form-control cefr-select';
+                ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].forEach(level => {
+                    const option = document.createElement('option');
+                    option.value = level;
+                    option.textContent = level;
+                    option.selected = level === cefrLevel;
+                    cefrSelect.appendChild(option);
+                });
+                
+                const removeBtn = document.createElement('span');
+                removeBtn.className = 'remove-definition';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.addEventListener('click', () => {
+                    if (definitionsContainer.children.length > 1) {
+                        definitionRow.remove();
+                    }
+                });
+                
+                definitionRow.appendChild(textInput);
+                definitionRow.appendChild(cefrSelect);
+                definitionRow.appendChild(removeBtn);
+                
+                definitionsContainer.appendChild(definitionRow);
+            }
+            
+            function saveFlashcard(e) {
+                e.preventDefault();
+                
+                const word = document.getElementById('word').value.trim();
+                if (!word) {
+                    alert('Please enter a word');
+                    return;
+                }
+                
+                // Collect definitions
+                const definitions = [];
+                const definitionRows = definitionsContainer.querySelectorAll('.definition-row');
+                
+                definitionRows.forEach(row => {
+                    const textInput = row.querySelector('.definition-input');
+                    const cefrSelect = row.querySelector('.cefr-select');
+                    
+                    if (textInput.value.trim()) {
+                        definitions.push({
+                            text: textInput.value.trim(),
+                            cefrLevel: cefrSelect.value
+                        });
+                    }
+                });
+                
+                if (definitions.length === 0) {
+                    alert('Please add at least one definition');
+                    return;
+                }
+                
+                // Create flashcard object
+                const flashcard = {
+                    word,
+                    definitions
+                };
+                
+                // Add or update flashcard
+                const isEdit = document.getElementById('modal-title').textContent.includes('Edit');
+                if (isEdit) {
+                    // Update existing flashcard
+                    flashcards[currentCardIndex] = flashcard;
+                } else {
+                    // Add new flashcard
+                    flashcards.push(flashcard);
+                    currentCardIndex = flashcards.length - 1;
+                }
+                
+                // Save to localStorage
+                saveFlashcards();
+                
+                // Update UI
+                renderFlashcard();
+                renderWordsList();
+                
+                // Show notification
+                showNotification('Flashcard saved successfully!');
+                
+                // Close modal
+                closeModal();
+            }
+            
+            function editFlashcard(index) {
+                currentCardIndex = index;
+                document.getElementById('modal-title').textContent = 'Edit Flashcard';
+                
+                const card = flashcards[index];
+                document.getElementById('word').value = card.word;
+                
+                // Clear existing definition fields
+                definitionsContainer.innerHTML = '';
+                
+                // Add definition fields
+                if (card.definitions && card.definitions.length > 0) {
+                    card.definitions.forEach(def => {
+                        addDefinitionField(def.text, def.cefrLevel);
+                    });
+                } else {
+                    addDefinitionField();
+                }
+                
+                flashcardModal.classList.add('active');
+            }
+            
+            function deleteFlashcard(index) {
+                if (confirm('Are you sure you want to delete this flashcard?')) {
+                    flashcards.splice(index, 1);
+                    saveFlashcards();
+                    
+                    if (currentCardIndex >= flashcards.length) {
+                        currentCardIndex = Math.max(0, flashcards.length - 1);
+                    }
+                    
+                    renderFlashcard();
+                    renderWordsList();
+                    showNotification('Flashcard deleted successfully!');
+                }
+            }
+            
+            function saveFlashcards() {
+                try {
+                    localStorage.setItem('flashcards', JSON.stringify(flashcards));
+                    console.log('Flashcards saved:', flashcards);
+                } catch (error) {
+                    console.error('Error saving flashcards:', error);
+                    showNotification('Error saving flashcards!', true);
+                }
+            }
+            
+            function showNotification(message, isError = false) {
+                notification.textContent = message;
+                notification.style.backgroundColor = isError ? 'var(--error)' : 'var(--success)';
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            function loadSampleData() {
+                flashcards = [
+                    {
+                        word: "Hello",
+                        definitions: [
+                            { text: "A common greeting", cefrLevel: "A1" },
+                            { text: "An expression of greeting", cefrLevel: "A2" }
+                        ]
+                    },
+                    {
+                        word: "Goodbye",
+                        definitions: [
+                            { text: "A farewell expression", cefrLevel: "A1" },
+                            { text: "The act of parting", cefrLevel: "B1" }
+                        ]
+                    },
+                    {
+                        word: "Computer",
+                        definitions: [
+                            { text: "An electronic device for processing data", cefrLevel: "A2" },
+                            { text: "A programmable machine", cefrLevel: "B1" }
+                        ]
+                    }
+                ];
+                saveFlashcards();
+            }
+        });
+    </script>
 </body>
 </html>
