@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlashCard Master</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Material+Icons&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Material+Icons&display=swap" rel="stylesheet">
+    <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
 </head>
 <body>
     <div class="app-container" data-theme="light">
@@ -34,8 +34,7 @@
                             </button>
                         </div>
                         <div class="card-back">
-                            <p id="card-definition">No definition available</p>
-                            <span class="cefr-level">A1</span>
+                            <div id="definitions-list" class="definitions-container"></div>
                         </div>
                     </div>
                 </div>
@@ -65,8 +64,8 @@
                         <thead>
                             <tr>
                                 <th>Word</th>
-                                <th>Definition</th>
-                                <th>Level</th>
+                                <th>Definitions</th>
+                                <th>Levels</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
