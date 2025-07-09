@@ -1,21 +1,116 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Flashcards App</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlashCard Master</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h1>Flashcards</h1>
-    <form id="add-word-form">
-      <input type="text" id="word" placeholder="Word" required />
-      <input type="text" id="definition" placeholder="Definition" required />
-      <input type="text" id="cefr" placeholder="CEFR Level (A1, B2, etc.)" required />
-      <button type="submit">Add</button>
-    </form>
-    <div id="cards-container"></div>
-  </div>
-  <script src="app.js"></script>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>FlashCard Master</h1>
+            <div class="header-controls">
+                <button id="toggle-view" class="icon-button">
+                    <span class="material-icons">table_view</span>
+                </button>
+                <button id="toggle-theme" class="icon-button">
+                    <span class="material-icons">dark_mode</span>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <!-- Flashcard View -->
+            <div id="flashcard-view" class="view active">
+                <div id="flashcard" class="card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <h2 id="card-word">Hello</h2>
+                            <button id="play-audio" class="icon-button large">
+                                <span class="material-icons">volume_up</span>
+                            </button>
+                        </div>
+                        <div class="card-back">
+                            <p id="card-definition">A common greeting</p>
+                            <span class="cefr-level" data-cefr="A1">A1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-controls">
+                    <button id="prev-card" class="control-button">
+                        <span class="material-icons">chevron_left</span>
+                    </button>
+                    <button id="flip-card" class="control-button primary">
+                        Flip Card
+                    </button>
+                    <button id="next-card" class="control-button">
+                        <span class="material-icons">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table View -->
+            <div id="table-view" class="view">
+                <div class="table-controls">
+                    <button id="add-flashcard" class="control-button primary">
+                        <span class="material-icons">add</span> Add New
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Word</th>
+                            <th>Definition</th>
+                            <th>CEFR Level</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="flashcards-table">
+                        <!-- Filled by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- Add/Edit Modal -->
+        <div id="flashcard-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2 id="modal-title">Add New Flashcard</h2>
+                <form id="flashcard-form">
+                    <div class="form-group">
+                        <label for="word">Word</label>
+                        <input type="text" id="word" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="audio-file">Audio File</label>
+                        <input type="text" id="audio-file" placeholder="filename.mp3">
+                    </div>
+                    <div class="form-group">
+                        <label>Definitions</label>
+                        <div id="definitions-container">
+                            <!-- Definitions will be added here -->
+                        </div>
+                        <button type="button" id="add-definition" class="control-button">
+                            <span class="material-icons">add</span> Add Definition
+                        </button>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancel-flashcard" class="control-button">
+                            Cancel
+                        </button>
+                        <button type="submit" class="control-button primary">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
