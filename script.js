@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // App State
     let currentTheme = localStorage.getItem('theme') || 'light';
     let currentView = localStorage.getItem('view') || 'flashcard';
-    let flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+    let flashcards = [];
     let currentCardIndex = 0;
     
     // Initialize the app
@@ -38,12 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateViewIcon();
         
         // Load flashcards
-        if (flashcards.length === 0) {
-            loadSampleData();
-        } else {
-            renderFlashcard();
-            renderTable();
-        }
+        loadFlashcards();
         
         // Set up event listeners
         setupEventListeners();
@@ -78,6 +73,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeModal();
             }
         });
+    }
+    
+    // Load flashcards from words.json
+    async function loadFlashcards() {
+        try {
+            const response = await fetch('words.json');
+            if (!response.ok) throw new Error('Failed to load words');
+            flashcards = await response.json();
+            
+            // Initialize with first card if available
+            if (flashcards.length > 0) {
+                currentCardIndex = 0;
+                renderFlashcard();
+                renderTable();
+            } else {
+                // Load sample data if empty
+                loadSampleData();
+            }
+        } catch (error) {
+            console.error('Error loading flashcards:', error);
+            loadSampleData();
+        }
+    }
+    
+    // Save flashcards to words.json (simulated - would need server in real app)
+    function saveFlashcards() {
+        // In a real app, you would send this to a server
+        console.log('Flashcards updated (would save to server in production)');
+        renderFlashcard();
+        renderTable();
     }
     
     // Theme functions
@@ -164,9 +189,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (flashcards.length === 0) return;
         
         const card = flashcards[currentCardIndex];
-        if (card.audioFile) {
-            const audio = new Audio(`assets/audio/${card.audioFile}`);
-            audio.play().catch(e => console.error('Audio playback failed:', e));
+        if (card.word) {
+            // Use Web Speech API for pronunciation
+            speakWord(card.word);
+        }
+    }
+    
+    // Text-to-speech function
+    function speakWord(text) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US'; // Set to your target language
+            utterance.rate = 0.9;
+            speechSynthesis.speak(utterance);
+        } else {
+            alert('Text-to-speech not supported in your browser');
         }
     }
     
@@ -229,8 +266,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const playBtn = document.createElement('button');
             playBtn.className = 'icon-button';
             playBtn.innerHTML = '<span class="material-icons">volume_up</span>';
-            playBtn.title = 'Play audio';
-            playBtn.addEventListener('click', () => playAudio(card));
+            playBtn.title = 'Play pronunciation';
+            playBtn.addEventListener('click', () => speakWord(card.word));
             actionsCell.appendChild(playBtn);
             
             const editBtn = document.createElement('button');
@@ -253,20 +290,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    function playAudio(card) {
-        if (card.audioFile) {
-            const audio = new Audio(`assets/audio/${card.audioFile}`);
-            audio.play().catch(e => console.error('Audio playback failed:', e));
-        }
-    }
-    
     function editFlashcard(index) {
         currentCardIndex = index;
         document.getElementById('modal-title').textContent = 'Edit Flashcard';
         
         const card = flashcards[index];
         document.getElementById('word').value = card.word;
-        document.getElementById('audio-file').value = card.audioFile || '';
         
         // Clear existing definition fields
         definitionsContainer.innerHTML = '';
@@ -301,7 +330,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function openAddFlashcardModal() {
         document.getElementById('modal-title').textContent = 'Add New Flashcard';
         document.getElementById('word').value = '';
-        document.getElementById('audio-file').value = '';
         definitionsContainer.innerHTML = '';
         addDefinitionField();
         flashcardModal.classList.add('active');
@@ -351,7 +379,6 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const word = document.getElementById('word').value.trim();
-        const audioFile = document.getElementById('audio-file').value.trim();
         
         // Collect definitions
         const definitions = [];
@@ -377,7 +404,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create or update flashcard
         const flashcard = {
             word,
-            audioFile: audioFile || undefined,
             definitions
         };
         
@@ -396,23 +422,17 @@ document.addEventListener('DOMContentLoaded', function() {
         closeModal();
     }
     
-    // Data functions
-    function saveFlashcards() {
-        localStorage.setItem('flashcards', JSON.stringify(flashcards));
-    }
-    
+    // Sample data
     function loadSampleData() {
         flashcards = [
             {
                 word: "Hello",
-                audioFile: "hello.mp3",
                 definitions: [
                     { text: "A common greeting", cefrLevel: "A1" }
                 ]
             },
             {
                 word: "Goodbye",
-                audioFile: "goodbye.mp3",
                 definitions: [
                     { text: "A farewell expression", cefrLevel: "A1" },
                     { text: "The act of parting", cefrLevel: "B1" }
